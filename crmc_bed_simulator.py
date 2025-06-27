@@ -4,13 +4,28 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="CRMC PACU ROI Simulator", layout="wide")
 
+# --- Compact Styling ---
+st.markdown("""
+    <style>
+        h1, h2, h3 {
+            font-size: 1.2em;
+        }
+        .stMetricValue {
+            font-size: 1.5em !important;
+        }
+        .stMarkdown p {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- Password Protection ---
 PASSWORD = "CRMC2024"
 if 'authenticated' not in st.session_state:
     st.session_state['authenticated'] = False
 
 if not st.session_state['authenticated']:
-    st.title("🔒 CRMC PACU ROI Simulator")
+    st.markdown("## 🔒 CRMC PACU ROI Simulator")
     pwd = st.text_input("Enter password to access:", type="password")
     if pwd == PASSWORD:
         st.session_state['authenticated'] = True
@@ -45,7 +60,7 @@ with st.expander("ℹ️ Help & Definitions"):
     """)
 
 with tab1:
-    st.title("CRMC Extended Stay Bed ROI Simulator")
+    st.markdown("## CRMC Extended Stay Bed ROI Simulator")
     st.markdown("🔹 This simulation models the addition of **6 extended stay beds**.")
 
     st.sidebar.header("Surgical Case Assumptions")
@@ -64,7 +79,7 @@ with tab1:
     transfers_per_week = st.sidebar.number_input("Additional transfers accepted per week", value=0)
     revenue_per_transfer = st.sidebar.number_input("Revenue per transfer ($)", value=0)
 
-    st.header("Throughput Gain Estimator")
+    st.markdown("### Throughput Gain Estimator")
     blocked_hours = st.number_input("PACU hours lost per week due to holds", value=0)
     bay_hours = st.number_input("Total PACU capacity hours/week", value=0)
 
@@ -106,7 +121,7 @@ with tab1:
     col2.metric("Annual surgical revenue", f"${revenue_surgical:,.0f}")
     col3.metric("Annual transfer revenue", f"${revenue_transfers:,.0f}")
 
-    st.subheader("Cumulative Net Gain (Surgical + Transfer Revenue)")
+    st.markdown("### Cumulative Net Gain (Surgical + Transfer Revenue)")
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(years, net_gain, marker='o', label='Cumulative Net Gain')
     ax.axhline(0, color='gray', linestyle='--')
@@ -118,13 +133,13 @@ with tab1:
     st.pyplot(fig)
 
 with tab2:
-    st.title("Cost Avoidance Estimator")
-    st.subheader("ED Boarding Cost")
+    st.markdown("## Cost Avoidance Estimator")
+    st.markdown("### ED Boarding Cost")
     ed_hours = st.number_input("ED boarding hours per week", value=0)
     ed_cost_per_hour = st.number_input("Cost per ED boarding hour ($)", value=0)
     ed_annual_cost = ed_hours * ed_cost_per_hour * 52
 
-    st.subheader("OR Idle Time")
+    st.markdown("### OR Idle Time")
     or_idle_minutes = st.number_input("OR idle minutes/week due to PACU", value=0)
     or_idle_cost_per_min = st.number_input("Cost per idle OR minute ($)", value=0)
     or_annual_cost = or_idle_minutes * or_idle_cost_per_min * 52
