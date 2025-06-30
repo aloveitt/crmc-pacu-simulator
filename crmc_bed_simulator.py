@@ -4,28 +4,13 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="CRMC PACU ROI Simulator", layout="wide")
 
-# --- Compact Styling ---
-st.markdown("""
-    <style>
-        h1, h2, h3 {
-            font-size: 1.2em;
-        }
-        .stMetricValue {
-            font-size: 1.5em !important;
-        }
-        .stMarkdown p {
-            margin-bottom: 0.5rem;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # --- Password Protection ---
 PASSWORD = "CRMC2024"
 if 'authenticated' not in st.session_state:
     st.session_state['authenticated'] = False
 
 if not st.session_state['authenticated']:
-    st.markdown("## 🔒 CRMC PACU ROI Simulator")
+    st.title("🔒 CRMC PACU ROI Simulator")
     pwd = st.text_input("Enter password to access:", type="password")
     if pwd == PASSWORD:
         st.session_state['authenticated'] = True
@@ -60,28 +45,28 @@ with st.expander("ℹ️ Help & Definitions"):
     """)
 
 with tab1:
-    st.markdown("## CRMC Extended Stay Bed ROI Simulator")
+    st.title("CRMC Extended Stay Bed ROI Simulator")
     st.markdown("🔹 This simulation models the addition of **6 extended stay beds**.")
 
     st.sidebar.header("Surgical Case Assumptions")
-    surgeries_per_week = st.sidebar.number_input("Surgeries per week", value=0)
-    avg_pacu_time_min = st.sidebar.number_input("Avg PACU time per case (min)", value=0)
-    pacu_bays = st.sidebar.number_input("PACU bays", value=0)
-    pacu_holds_per_week = st.sidebar.number_input("PACU holds per week", value=0)
-    revenue_per_case = st.sidebar.number_input("Revenue per surgical case ($)", value=0)
+    surgeries_per_week = st.sidebar.number_input("Surgeries per week", value=49)
+    avg_pacu_time_min = st.sidebar.number_input("Avg PACU time per case (min)", value=49)
+    pacu_bays = st.sidebar.number_input("PACU bays", value=6)
+    pacu_holds_per_week = st.sidebar.number_input("PACU holds per week", value=6)
+    revenue_per_case = st.sidebar.number_input("Revenue per surgical case ($)", value=15000)
 
     st.sidebar.header("Staffing & Cost Assumptions")
-    cost_to_add_beds = st.sidebar.number_input("Capital cost to add 6 beds ($)", value=0)
-    new_ftes = st.sidebar.number_input("New FTEs needed", value=0)
-    fte_cost_per_year = st.sidebar.number_input("Annual cost per FTE ($)", value=0)
+    cost_to_add_beds = st.sidebar.number_input("Capital cost to add 6 beds ($)", value=1000000)
+    new_ftes = st.sidebar.number_input("New FTEs needed", value=6)
+    fte_cost_per_year = st.sidebar.number_input("Annual cost per FTE ($)", value=90000)
 
     st.sidebar.header("Transfer Volume Impact")
-    transfers_per_week = st.sidebar.number_input("Additional transfers accepted per week", value=0)
-    revenue_per_transfer = st.sidebar.number_input("Revenue per transfer ($)", value=0)
+    transfers_per_week = st.sidebar.number_input("Additional transfers accepted per week", value=3)
+    revenue_per_transfer = st.sidebar.number_input("Revenue per transfer ($)", value=15000)
 
-    st.markdown("### Throughput Gain Estimator")
-    blocked_hours = st.number_input("PACU hours lost per week due to holds", value=0)
-    bay_hours = st.number_input("Total PACU capacity hours/week", value=0)
+    st.header("Throughput Gain Estimator")
+    blocked_hours = st.number_input("PACU hours lost per week due to holds", value=5)
+    bay_hours = st.number_input("Total PACU capacity hours/week", value=300)
 
     if bay_hours > 0:
         est_gain = (blocked_hours / bay_hours) * 100
@@ -121,7 +106,7 @@ with tab1:
     col2.metric("Annual surgical revenue", f"${revenue_surgical:,.0f}")
     col3.metric("Annual transfer revenue", f"${revenue_transfers:,.0f}")
 
-    st.markdown("### Cumulative Net Gain (Surgical + Transfer Revenue)")
+    st.subheader("Cumulative Net Gain (Surgical + Transfer Revenue)")
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(years, net_gain, marker='o', label='Cumulative Net Gain')
     ax.axhline(0, color='gray', linestyle='--')
@@ -133,13 +118,13 @@ with tab1:
     st.pyplot(fig)
 
 with tab2:
-    st.markdown("## Cost Avoidance Estimator")
-    st.markdown("### ED Boarding Cost")
+    st.title("Cost Avoidance Estimator")
+    st.subheader("ED Boarding Cost")
     ed_hours = st.number_input("ED boarding hours per week", value=0)
     ed_cost_per_hour = st.number_input("Cost per ED boarding hour ($)", value=0)
     ed_annual_cost = ed_hours * ed_cost_per_hour * 52
 
-    st.markdown("### OR Idle Time")
+    st.subheader("OR Idle Time")
     or_idle_minutes = st.number_input("OR idle minutes/week due to PACU", value=0)
     or_idle_cost_per_min = st.number_input("Cost per idle OR minute ($)", value=0)
     or_annual_cost = or_idle_minutes * or_idle_cost_per_min * 52
